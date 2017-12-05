@@ -4,13 +4,6 @@
 
 #include "robotiq_2f_hw_usb/robotiq_2f_hw_usb.hpp"
 
-bool g_quit = false;
-
-void quitRequested(int sig)
-{
-	g_quit = true;
-}
-
 bool isStopPressed = false;
 bool wasStopHandled = true;
 void eStopCB(const std_msgs::BoolConstPtr& e_stop_msg)
@@ -52,10 +45,6 @@ int main( int argc, char** argv )
 	ros::AsyncSpinner spinner(2);
 	spinner.start();
 
-	signal(SIGTERM, quitRequested);
-	signal(SIGINT, quitRequested);
-	signal(SIGHUP, quitRequested);
-
 	ros::NodeHandle rq2f_nh;
 
 	// get params or give default values
@@ -92,7 +81,7 @@ int main( int argc, char** argv )
 	//the controller manager
 	controller_manager::ControllerManager manager(&rq2f_hw, rq2f_nh);
 
-	while( !g_quit )
+	while( ros::ok() )
 	{
 		if (!clock_gettime(CLOCK_MONOTONIC, &ts))
 		{
@@ -133,11 +122,14 @@ int main( int argc, char** argv )
 		rq2f_hw.write();
 	}
 
-	ROS_INFO("Stopping spinner...");
-	spinner.stop();
-
 	ROS_INFO("Stopping the Robotiq 2F USB device...");
 	rq2f_hw.stop();
+
+	// give time to controllers to unload
+	ros::Duration(1.0).sleep();
+
+	ROS_INFO("Stopping spinner...");
+	spinner.stop();
 
 	ROS_INFO("Bye !!!");
 

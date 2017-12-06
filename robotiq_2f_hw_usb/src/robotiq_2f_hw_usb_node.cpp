@@ -1,9 +1,13 @@
+#include <mutex>
+
 #include <ros/ros.h>
 #include <controller_manager/controller_manager.h>
 #include <std_msgs/Bool.h>
+#include <std_srvs/Trigger.h>
 
 #include "robotiq_2f_hw_usb/robotiq_2f_hw_usb.hpp"
 
+bool isReactivateRequested = false;
 bool isStopPressed = false;
 bool wasStopHandled = true;
 void eStopCB(const std_msgs::BoolConstPtr& e_stop_msg)
@@ -38,6 +42,16 @@ std::string getURDF(ros::NodeHandle &model_nh, std::string param_name)
 	return urdf_string;
 }
 
+bool reactivateCallback(std_srvs::TriggerRequest& __req, std_srvs::TriggerResponse& __res)
+{
+	isReactivateRequested = true;
+	while(isReactivateRequested)
+		ros::Duration(1.0).sleep();
+	__res.success = true;
+	__res.message = "The gripper has been reactivated";
+	return true;
+}
+
 int main( int argc, char** argv )
 {
 	ros::init(argc, argv, "robotiq_2f_hardware", ros::init_options::NoSigintHandler);
@@ -57,6 +71,9 @@ int main( int argc, char** argv )
 
 	// advertise the e-stop topic
 	ros::Subscriber estop_sub = rq2f_nh.subscribe(rq2f_nh.resolveName("emergency_stop"), 1, eStopCB);
+
+	// advertise the reactivate service
+	ros::ServiceServer reactivate_srv = rq2f_nh.advertiseService("reactivate", reactivateCallback);
 
 	// get the general robot description, the lwr class will take care of parsing what's useful to itself
 	std::string urdf_string = getURDF(rq2f_nh, "/robot_description");
@@ -81,49 +98,63 @@ int main( int argc, char** argv )
 	//the controller manager
 	controller_manager::ControllerManager manager(&rq2f_hw, rq2f_nh);
 
+	// TODO rate so it does not runs crazy
+	ros::Rate rate(30);
+
 	while( ros::ok() )
 	{
-		if (!clock_gettime(CLOCK_MONOTONIC, &ts))
+		if(!isReactivateRequested)
 		{
-			now.sec = ts.tv_sec;
-			now.nsec = ts.tv_nsec;
-			period = now - last;
-			last = now;
+			if (!clock_gettime(CLOCK_MONOTONIC, &ts))
+			{
+				now.sec = ts.tv_sec;
+				now.nsec = ts.tv_nsec;
+				period = now - last;
+				last = now;
+			}
+			else
+			{
+				ROS_FATAL("Failed to poll realtime clock!");
+				break;
+			}
+
+			rq2f_hw.read();
+
+			bool resetControllers;
+			if(!wasStopHandled && !resetControllers)
+			{
+				ROS_WARN("E-STOP HAS BEEN PRESSED: Controllers will be restarted, but the robot won't move until you release the E-Stop");
+				ROS_WARN("You need to reactivate the gripper calling the service /reactivate, and then release the EStop");
+				ROS_WARN("HOW TO RELEASE E-STOP: rostopic pub -r 10 /NAMESPACE/emergency_stop std_msgs/Bool 'data: false'");
+				resetControllers = true;
+				wasStopHandled = true;
+				rq2f_hw.estop();
+			}
+
+			if( isStopPressed )
+			{
+				wasStopHandled = false;
+			}
+			else
+			{
+				resetControllers = false;
+				wasStopHandled = true;
+			}
+
+			manager.update(ros::Time::now(), period, resetControllers);
+
+			rq2f_hw.write();
+			rate.sleep();
 		}
 		else
 		{
-			ROS_FATAL("Failed to poll realtime clock!");
-			break;
+			rq2f_hw.reactivate();
+			isReactivateRequested = false;
 		}
-
-		rq2f_hw.read();
-
-		bool resetControllers;
-		if(!wasStopHandled && !resetControllers)
-		{
-			ROS_WARN("E-STOP HAS BEEN PRESSED: Controllers will be restarted, but the robot won't move until you release the E-Stop");
-			ROS_WARN("HOW TO RELEASE E-STOP: rostopic pub -r 10 /NAMESPACE/emergency_stop std_msgs/Bool 'data: false'");
-			resetControllers = true;
-			wasStopHandled = true;
-		}
-
-		if( isStopPressed )
-		{
-			wasStopHandled = false;
-		}
-		else
-		{
-			resetControllers = false;
-			wasStopHandled = true;
-		}
-
-		manager.update(ros::Time::now(), period, resetControllers);
-
-		rq2f_hw.write();
 	}
 
 	ROS_INFO("Stopping the Robotiq 2F USB device...");
-	rq2f_hw.stop();
+	rq2f_hw.close();
 
 	// give time to controllers to unload
 	ros::Duration(1.0).sleep();

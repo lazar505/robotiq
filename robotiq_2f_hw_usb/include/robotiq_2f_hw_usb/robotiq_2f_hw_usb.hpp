@@ -44,9 +44,8 @@ public:
 		rq_cmd_.buffer[2] = ACTIVATION_CMD[2];
 
 		// finally activate the device (handshake) and check
-		int rc = modbus_write_registers(ctx_ptr_, CMD_ADDR, 9, ACTIVATION_CMD);
-
-		if(rc < 0)
+		int ra = modbus_write_registers(ctx_ptr_, CMD_ADDR, 9, ACTIVATION_CMD);
+		if(ra < 0)
 		{
 			std::cout << "Couldn't perform an activation on the USB device" << std::endl;
 			return false;
@@ -110,13 +109,43 @@ public:
 	}
 
 	/**
-	 * @brief stop This function resets the gripper, and then release the USB port.
+	 * @brief close This function resets the gripper, and then release the USB port.
 	 */
-	void stop()
+	void close()
 	{
-		modbus_write_registers(ctx_ptr_, CMD_ADDR, 1, RESET_CMD);
+		modbus_write_registers(ctx_ptr_, CMD_ADDR, 9, RESET_CMD);
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		modbus_close(ctx_ptr_);
+	}
+
+	/**
+	 * @brief reactivate This function resets to clear errors, and reactivate the gripper
+	 */
+	void reactivate()
+	{
+		int rs = modbus_write_registers(ctx_ptr_, CMD_ADDR, 9, RESET_CMD);
+		if(rs < 0)
+		{
+			std::cout << "Couldn't perform a reset on the USB device" << std::endl;
+			exit(-2);
+		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+		int ra = modbus_write_registers(ctx_ptr_, CMD_ADDR, 9, ACTIVATION_CMD);
+		if(ra < 0)
+		{
+			std::cout << "Couldn't perform an activation on the USB device" << std::endl;
+			exit(-2);
+		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+	}
+
+	/**
+	 * @brief estop This function resets the gripper to clear all commands and errors
+	 */
+	void estop()
+	{
+		modbus_write_registers(ctx_ptr_, CMD_ADDR, 9, ESTOP_CMD);
+		std::this_thread::sleep_for(std::chrono::milliseconds(3000));
 	}
 
 	void setPort(std::string port){port_ = port;};

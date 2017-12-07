@@ -99,7 +99,7 @@ int main( int argc, char** argv )
 	controller_manager::ControllerManager manager(&rq2f_hw, rq2f_nh);
 
 	// TODO rate so it does not runs crazy
-	ros::Rate rate(30);
+	ros::Rate rate(10);
 
 	while( ros::ok() )
 	{

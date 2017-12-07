@@ -91,8 +91,7 @@ void ROBOTIQ2FHW::create(std::string name, std::string urdf_string)
 		// Only Position interface is available for the robotiq 2f grippers
 
 		hardware_interface::JointHandle joint_handle_position;
-		joint_handle_position = hardware_interface::JointHandle(state_interface_.getHandle(joint_names_[j]),
-																&joint_position_command_[j]);
+		joint_handle_position = hardware_interface::JointHandle(state_interface_.getHandle(joint_names_[j]), &joint_position_command_[j]);
 		position_interface_.registerHandle(joint_handle_position);
 
 		/*registerJointLimits(joint_names_[j],

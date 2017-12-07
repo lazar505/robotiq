@@ -42,57 +42,57 @@ public:
 	void create(std::string name, std::string urdf_string);
 
 	/**
-     * @brief init Pure virtual function that needs to be implemented in the chosen interface
+	* @brief init Pure virtual function that needs to be implemented in the chosen interface
 	 * @return
 	 */
 	virtual bool init() = 0;
 
 	/**
-     * @brief read Pure virtual function that needs to be implemented in the chosen interface
+	* @brief read Pure virtual function that needs to be implemented in the chosen interface
 	 */
 	virtual void read() = 0;
 
 	/**
-     * @brief write Pure virtual function that needs to be implemented in the chosen interface
+	* @brief write Pure virtual function that needs to be implemented in the chosen interface
 	 */
 	virtual void write() = 0;
 
 	/**
-     * @brief enforceLimits
-     * @param period
-     */
+	* @brief enforceLimits
+	* @param period
+	*/
 	void enforceLimits(ros::Duration period);
 
 	/**
-     * @brief reset
-     */
+	* @brief reset
+	*/
 	void reset();
 
-    /**
-     * @brief solveConstrainedConfiguration
-     */
-    void solveConstrainedConfiguration();
+	/**
+	* @brief solveConstrainedConfiguration
+	*/
+	void solveConstrainedConfiguration();
 
 	hardware_interface::JointStateInterface state_interface_;
-    hardware_interface::EffortJointInterface effort_interface_;
-    hardware_interface::PositionJointInterface position_interface_;
+	hardware_interface::EffortJointInterface effort_interface_;
+	hardware_interface::PositionJointInterface position_interface_;
 
 	int n_joints_;
 
-    std::vector<std::string> joint_names_;
+	std::vector<std::string> joint_names_;
 
-    std::vector<double>
-    joint_position_,
-    joint_position_prev_,
-    joint_velocity_,
+	std::vector<double>
+	joint_position_,
+	joint_position_prev_,
+	joint_velocity_,
 	joint_effort_,
-    joint_position_command_,
-    joint_effort_command_;
+	joint_position_command_,
+	joint_effort_command_;
 
-    std::vector<double>
-    joint_lower_limits_,
-    joint_upper_limits_,
-    joint_effort_limits_;
+	std::vector<double>
+	joint_lower_limits_,
+	joint_upper_limits_,
+	joint_effort_limits_;
 };
 
 } // robotiq_2f_hardware

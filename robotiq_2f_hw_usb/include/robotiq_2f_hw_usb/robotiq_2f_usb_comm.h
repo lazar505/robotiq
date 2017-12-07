@@ -43,7 +43,7 @@ void setPositionEffort(const double &pos, const double &eff, rq_comm &cmd)
 	uint8_t u_pos = std::lround( (255*pos/POS_MAX));
 	uint8_t u_eff = std::lround( (255*eff/EFF_MAX));
 	cmd.buffer[1] = (0x0 << 8) + u_pos;
-	cmd.buffer[2] = 0xFFFF; // (0xFF << 8) + u_eff;
+	cmd.buffer[2] = (0xFF << 8) + u_eff; // 0xFFFF;
 };
 
 void setPositionVelocityEffort(const double &pos, const double &vel, const double &eff, rq_comm &cmd)

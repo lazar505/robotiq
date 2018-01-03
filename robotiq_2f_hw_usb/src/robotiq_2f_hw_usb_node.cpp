@@ -120,7 +120,7 @@ int main( int argc, char** argv )
 
 			rq2f_hw.read();
 
-			bool resetControllers;
+			/*bool resetControllers;
 			if(!wasStopHandled && !resetControllers)
 			{
 				ROS_WARN("E-STOP HAS BEEN PRESSED: Controllers will be restarted, but the robot won't move until you release the E-Stop");
@@ -140,8 +140,9 @@ int main( int argc, char** argv )
 				resetControllers = false;
 				wasStopHandled = true;
 			}
+			manager.update(ros::Time::now(), period, resetControllers);*/
 
-			manager.update(ros::Time::now(), period, resetControllers);
+			manager.update(ros::Time::now(), period);
 
 			rq2f_hw.write();
 			rate.sleep();

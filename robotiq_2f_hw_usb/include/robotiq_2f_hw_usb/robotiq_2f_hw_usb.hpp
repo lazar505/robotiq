@@ -90,7 +90,7 @@ public:
 		getPositionCurrent(rq_msr_, joint_position_.at(0), joint_effort_.at(0));
 		joint_velocity_.at(0) = filters::exponentialSmoothing((joint_position_.at(0)-joint_position_prev_.at(0))/0.001,
 															  joint_velocity_.at(0),
-															  0.2);
+															  0.8);
 	}
 
 	/**

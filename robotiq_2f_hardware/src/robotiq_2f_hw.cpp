@@ -26,12 +26,12 @@ void ROBOTIQ2FHW::create(std::string name, std::string urdf_string)
 	// set names
 	joint_names_.push_back( name + std::string("_right_driver_joint") );
 
-	std::vector<transmission_interface::TransmissionInfo> all_transmissions;
-	std::vector<transmission_interface::TransmissionInfo> transmissions;
-	transmission_interface::TransmissionParser::parse(urdf_string, all_transmissions);
+	//std::vector<transmission_interface::TransmissionInfo> all_transmissions;
+	//std::vector<transmission_interface::TransmissionInfo> transmissions;
+	//transmission_interface::TransmissionParser::parse(urdf_string, all_transmissions);
 
 	// get this robot transmission's only
-	for (int j = 0; j < n_joints_; ++j)
+	/*for (int j = 0; j < n_joints_; ++j)
 	{
 		// std::cout << "Check joint " << joint_names_[j] << std::endl;
 		std::vector<transmission_interface::TransmissionInfo>::iterator it = all_transmissions.begin();
@@ -48,18 +48,18 @@ void ROBOTIQ2FHW::create(std::string name, std::string urdf_string)
 	{
 		std::cout << "robotiq_2f_hardware: " << "There are no transmission in this robot, all are non-driven joints? " 
 		<< std::endl;
-		return;
-	}
+		//return;
+	}*/
 
 	// register interfaces
 	for(int j=0; j < n_joints_; j++)
 	{
 		// check that this transmission has one joint
-		if(transmissions[j].joints_.size() == 0)
+		/*if(transmissions[j].joints_.size() == 0)
 		{
 		std::cout << "robotiq_2f_hardware: " << "Transmission " << transmissions[j].name_
 			<< " has no associated joints." << std::endl;
-		continue;
+		 continue;
 		}
 		else if(transmissions[j].joints_.size() > 1)
 		{
@@ -77,8 +77,10 @@ void ROBOTIQ2FHW::create(std::string name, std::string urdf_string)
 			" of transmission " << transmissions[j].name_ << " does not specify any hardware interface. " <<
 			"You need to, otherwise the joint can't be controlled." << std::endl;
 		continue;
-		}
+		}*/
 
+		std::vector<std::string> joint_interfaces;
+		joint_interfaces.push_back("hardware_interface/PositionJointInterface");
 		const std::string& hardware_interface = joint_interfaces.front();
 
 		// create joint state interface for all joints

@@ -27,6 +27,6 @@ In order to run this interface, you need to follow this steps.
 
 * Finally:
 
-`roslaunch robotiq_2f_hardware robotiq_2f_85_USB.launch usb_port:=/dev/ttyUSB0 server_id:=9`
+`roslaunch robotiq_2f_hw_usb robotiq_2f_85_USB.launch usb_port:=/dev/ttyUSB0 server_id:=9`
 
 The arguments are not mandatory. The `usb_port` defaults to `/dev/ttyUSB0`. Not sure how to test this without the urcap scripts, but you need to figure out the server id of the gripper. It defaults to 9 because that's the id of the gripper this package was developed with, but this might change.

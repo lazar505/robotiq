@@ -14,4 +14,8 @@
   <author email="carlos@beta-robots.com">Carlos J. Rosales Gallegos</author>
 
   <depend>catkin</depend>
+  <depend>robotiq_2f_controllers</depend>
+  <depend>robotiq_2f_hardware</depend>
+  <depend>robotiq_2f_hw_usb</depend>
+  <depend>robotiq_2f_model</depend>
 </package>

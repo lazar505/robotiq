@@ -22,6 +22,8 @@ class ROBOTIQ2FUSB : public ROBOTIQ2FHW
 {
 public:
 
+
+
 	/**
 	 * @brief init
 	 * @return
@@ -100,6 +102,8 @@ public:
 	{
 		setPositionEffort(joint_position_command_.at(0), 9.0, rq_cmd_);
 
+		setPositionEffort(joint_position_given, 9.0, rq_cmd_);
+
 		int rc = modbus_write_registers(ctx_ptr_, CMD_ADDR, 9, rq_cmd_.buffer);
 		if(rc < 0)
 		{
@@ -136,7 +140,12 @@ public:
 			std::cout << "Couldn't perform an activation on the USB device" << std::endl;
 			exit(-2);
 		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+		std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+
+	}
+
+	void set_gripper_position(double position_percent) {
+	  joint_position_given = POS_MAX*position_percent;
 	}
 
 	/**
@@ -154,6 +163,8 @@ public:
 
 private:
 	modbus_t *ctx_ptr_;
+
+  double joint_position_given = 0.0;
 
 	std::string port_;
 	int server_id_;

@@ -4,7 +4,12 @@ project(robotiq_2f_robot)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED COMPONENTS
+  robotiq_2f_controllers
+  robotiq_2f_hardware
+  robotiq_2f_hw_usb
+  robotiq_2f_model
+)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -98,7 +103,11 @@ find_package(catkin REQUIRED)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES robotiq_2f_robot
-#  CATKIN_DEPENDS other_catkin_pkg
+   CATKIN_DEPENDS 
+     robotiq_2f_controllers
+     robotiq_2f_hardware
+     robotiq_2f_hw_usb
+     robotiq_2f_model
 #  DEPENDS system_lib
 )
 

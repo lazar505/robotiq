@@ -24,7 +24,7 @@ void ROBOTIQ2FHW::create(std::string name, std::string urdf_string)
 	joint_velocity_.at(0) = 0.0;
 
 	// set names
-	joint_names_.push_back( name + std::string("_right_driver_joint") );
+	joint_names_.push_back(name);
 
 	//std::vector<transmission_interface::TransmissionInfo> all_transmissions;
 	//std::vector<transmission_interface::TransmissionInfo> transmissions;

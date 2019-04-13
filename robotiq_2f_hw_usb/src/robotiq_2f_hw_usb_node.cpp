@@ -14,6 +14,7 @@ void eStopCB(const std_msgs::BoolConstPtr& e_stop_msg)
 {
 	isStopPressed = e_stop_msg->data;
 }
+robotiq_2f_hardware::ROBOTIQ2FUSB rq2f_hw;
 
 // Get the URDF XML from the parameter server
 // ToDO: Consider to include this function in an share_place
@@ -52,6 +53,12 @@ bool reactivateCallback(std_srvs::TriggerRequest& __req, std_srvs::TriggerRespon
 	return true;
 }
 
+bool setPositionCallback(std_srvs::TriggerRequest& __req, std_srvs::TriggerResponse& __res)
+{
+	rq2f_hw.set_gripper_position(0.5);
+	return true;
+}
+
 int main( int argc, char** argv )
 {
 	ros::init(argc, argv, "robotiq_2f_hardware", ros::init_options::NoSigintHandler);
@@ -75,11 +82,14 @@ int main( int argc, char** argv )
 	// advertise the reactivate service
 	ros::ServiceServer reactivate_srv = rq2f_nh.advertiseService("reactivate", reactivateCallback);
 
+        // advertise the reactivate service
+	ros::ServiceServer setPosition_srv = rq2f_nh.advertiseService("set_position", setPositionCallback);
+
 	// get the general robot description, the lwr class will take care of parsing what's useful to itself
 	std::string urdf_string = getURDF(rq2f_nh, "/robot_description");
 
 	// construct and start the Robotiq 2F gripper using the USB interface 
-	robotiq_2f_hardware::ROBOTIQ2FUSB rq2f_hw;
+	
 	rq2f_hw.create(name, urdf_string);
 	rq2f_hw.setPort(port);
 	rq2f_hw.setServerID(server_id);
@@ -96,7 +106,7 @@ int main( int argc, char** argv )
 	ros::Duration period(1.0);
 
 	//the controller manager
-	controller_manager::ControllerManager manager(&rq2f_hw, rq2f_nh);
+	//controller_manager::ControllerManager manager(&rq2f_hw, rq2f_nh);
 
 	// TODO rate so it does not runs crazy
 	ros::Rate rate(10);
@@ -142,7 +152,7 @@ int main( int argc, char** argv )
 			}
 			manager.update(ros::Time::now(), period, resetControllers);*/
 
-			manager.update(ros::Time::now(), period);
+			//manager.update(ros::Time::now(), period);
 
 			rq2f_hw.write();
 			rate.sleep();

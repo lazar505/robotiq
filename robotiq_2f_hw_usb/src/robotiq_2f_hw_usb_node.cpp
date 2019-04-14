@@ -55,7 +55,7 @@ bool reactivateCallback(std_srvs::TriggerRequest& __req, std_srvs::TriggerRespon
 
 bool setPositionCallback(std_srvs::TriggerRequest& __req, std_srvs::TriggerResponse& __res)
 {
-	rq2f_hw.set_gripper_position(0.5);
+	rq2f_hw.set_gripper_position_effort(0.5, 9.0);
 	return true;
 }
 

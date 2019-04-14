@@ -102,7 +102,7 @@ public:
 	{
 		setPositionEffort(joint_position_command_.at(0), 9.0, rq_cmd_);
 
-		setPositionEffort(joint_position_given, 9.0, rq_cmd_);
+		setPositionEffort(joint_position_given, joint_effort_given, rq_cmd_);
 
 		int rc = modbus_write_registers(ctx_ptr_, CMD_ADDR, 9, rq_cmd_.buffer);
 		if(rc < 0)
@@ -144,8 +144,10 @@ public:
 
 	}
 
-	void set_gripper_position(double position_percent) {
-	  joint_position_given = POS_MAX*position_percent;
+	void set_gripper_position_effort(double position_percent, double effort_percent) 
+	{
+		joint_position_given = POS_MAX*position_percent;
+        	joint_effort_given = EFF_MAX*effort_percent;
 	}
 
 	/**
@@ -164,7 +166,8 @@ public:
 private:
 	modbus_t *ctx_ptr_;
 
-  double joint_position_given = 0.0;
+	double joint_position_given = 0.0;
+	double joint_effort_given = 9.0;
 
 	std::string port_;
 	int server_id_;

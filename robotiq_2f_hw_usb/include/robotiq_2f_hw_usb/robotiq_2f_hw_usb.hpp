@@ -140,7 +140,7 @@ public:
 			std::cout << "Couldn't perform an activation on the USB device" << std::endl;
 			exit(-2);
 		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+		std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 
 	}
 

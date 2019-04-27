@@ -14,4 +14,5 @@
   <author email="carlos@beta-robots.com">Carlos J. Rosales Gallegos</author>
 
   <depend>catkin</depend>
+  <depend>roboticsgroup_gazebo_plugins</depend>
 </package>

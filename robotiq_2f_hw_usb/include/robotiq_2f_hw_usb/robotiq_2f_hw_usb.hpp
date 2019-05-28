@@ -22,7 +22,7 @@ class ROBOTIQ2FUSB : public ROBOTIQ2FHW
 {
 public:
 
-
+        // virtual ~ROBOTIQ2FUSB() override { close(); }
 
 	/**
 	 * @brief init

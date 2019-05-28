@@ -27,6 +27,21 @@
 
 	<xacro:macro name="robotiq_2f_85" params="parent joint_name name precise_collision:=false adaptive_transmission:=false with_pads:=true *origin">
 
+                <xacro:property name="gripper_kp" value="1000000.0" />
+  		<xacro:property name="gripper_kd" value="1.5" />
+  		<xacro:property name="gripper_mu" value="1.2" />
+
+                <xacro:macro name="gazebo_params_gripper" params="name kp kd mu">
+    			<gazebo reference="${name}">
+      			<kp>${kp}</kp>
+      			<kd>${kd}</kd>
+      			<mu1>${mu}</mu1>
+      			<mu2>${mu}</mu2>
+    			</gazebo>
+  		</xacro:macro>
+
+                
+
 		<!-- base -->
 		<joint name="${parent}_${name}_BASE_joint" type="fixed">
 			<xacro:insert_block name="origin"/>
@@ -66,6 +81,7 @@
 			</collision>
 			</xacro:if>
 		</link>
+		<xacro:gazebo_params_gripper name="${name}_BASE" kp ="${gripper_kp}" kd="${gripper_kd}" mu="${gripper_mu}"/>
 
 		<!-- right finger -->
 
@@ -219,6 +235,7 @@
 				</collision>
 				</xacro:if>
 			</link>
+			<xacro:gazebo_params_gripper name="${name}_right_pad" kp ="${gripper_kp}" kd="${gripper_kd}" mu="${gripper_mu}"/>
 		</xacro:if>
 
 		<joint name="${name}_right_spring_link_joint" type="revolute">
@@ -416,6 +433,7 @@
 				</collision>
 				</xacro:if>
 			</link>
+			<xacro:gazebo_params_gripper name="${name}_left_pad" kp ="${gripper_kp}" kd="${gripper_kd}" mu="${gripper_mu}"/>
 		</xacro:if>
 
 		<joint name="${name}_left_spring_link_joint" type="revolute">
